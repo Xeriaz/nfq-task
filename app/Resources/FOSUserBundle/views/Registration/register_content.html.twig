@@ -1,0 +1,37 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+<h1 class="">Registration</h1>
+
+{{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
+<div class="form-group">
+    {{ form_widget(form.username, { 'attr': {'class': 'form-control placeholder-no-fix', 'placeholder':'User Name'} }) }}
+    {% for errorItem in form.username.vars.errors %}
+        <span class="help-inline">{{ errorItem.message }}</span>
+    {% endfor %}
+</div>
+<div class="form-group">
+    {{ form_widget(form.email, { 'attr': {'class': 'form-control', 'placeholder':'E-mail'} }) }}
+    {% for errorItem in form.email.vars.errors %}
+        <span class="help-inline">{{ errorItem.message }}</span>
+    {% endfor %}
+</div>
+<div class="form-group">
+    {{ form_widget(form.plainPassword.first, { 'attr': {'class': 'form-control', 'placeholder':'Password'} }) }}
+    {% for errorItem in form.plainPassword.first.vars.errors %}
+        <span class="help-inline">{{ errorItem.message }}</span>
+    {% endfor %}
+</div>
+<div class="form-group">
+    {{ form_widget(form.plainPassword.second, { 'attr': {'class': 'form-control', 'placeholder':'Repeat Password'} }) }}
+    {% for errorItem in form.plainPassword.second.vars.errors %}
+        <span class="help-inline">{{ errorItem.message }}</span>
+    {% endfor %}
+</div>
+<div class="form-actions">
+    <a class="btn btn-outline-secondary" href="{{ path('fos_user_security_login') }}">Back to login</a>
+    <input class="btn btn-info" type="submit" value="{{ 'registration.submit'|trans }}" />
+</div>
+
+{{ form_widget(form) }}
+
+{{ form_end(form) }}

@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="card-deck">
+
+            {% for book in pagination %}
+
+                <div class="col-sm-6 col-md-4" style="padding-top: 10px">
+                    <div class="card" >
+                        <a href="/book/details/{{ book.id }}" class="btn btn-outline-info">Details</a>
+                        <div class="card-body">
+                            <h5 class="card-title text-truncate">{{ book.title }}</h5>
+                            <p class="text-justify card-text block-ellipsis"> Author: {{ book.author }}</p>
+                            {#<p class="text-justify card-text block-ellipsis"> Genre: {{ book.genre.genre }}</p>#}
+                            {# FIXME Hack for books without genres#}
+                            {% if (book.genre != null) %}
+                                <p class="text-justify card-text block-ellipsis"> Genre: {{ book.genre.genre }}</p>
+                            {% endif %}
+
+
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">{{ book.publishDate|date('Y-m-d') }}</small>
+
+                            {% if is_granted('ROLE_USER') %}
+                                <a href="#" class="btn btn-success float-right">Add to cart</a>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        <row class="mx-auto" style="padding: 10px;">
+            <div class="navigation ">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+        </row>
+    </div>
+
+{% endblock %}
+
