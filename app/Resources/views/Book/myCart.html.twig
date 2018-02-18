@@ -2,6 +2,13 @@
 
 {% block body %}
 
+    Sort by title:
+    {% if pagination.getDirection() == 'asc' %}
+        {{ knp_pagination_sortable(pagination, 'Ascending', 'title')|raw }}
+    {% else %}
+        {{ knp_pagination_sortable(pagination, 'Descending', 'title')|raw }}
+    {% endif %}
+
     <div class="card-deck">
 
         {% for book in pagination %}

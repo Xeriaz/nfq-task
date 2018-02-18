@@ -6,6 +6,7 @@ use AppBundle\Entity\Book;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Genre;
 use AppBundle\Form\BookFormType;
+use Knp\Component\Pager\Paginator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,23 +20,33 @@ class BookController extends Controller
      */
     public function indexAction(Request $request)
     {
-    	$books = $this->getDoctrine()
-		    ->getRepository('AppBundle:Book')
-		    ->findAll();
+	    $searchQuery = $request->query->get('search');
+
+	    if ($searchQuery !== null) {
+	    	$books = $this->getDoctrine()
+			              ->getRepository('AppBundle:Book')
+			              ->searchBooksByTitle($searchQuery);
+	    } else {
+	    	$books = $this->getDoctrine()
+		                  ->getRepository('AppBundle:Book')
+		                  ->findAll();
+	    }
 
 	    /**
-	     * @var $paginator \Paginator_ded53a1
+	     * @var Paginator $paginator
 	     */
     	$paginator = $this->get('knp_paginator');
     	$pagination = $paginator->paginate(
     	    $books,
 	        $request->query->getInt('page', 1),
-	        9
+	        9,
+	        [
+	        	'defaultSortFieldName' => 'title',
+	        ]
 	    );
 
         return $this->render('Book/index.html.twig', [
         	'pagination' => $pagination,
-        	'books' => $books
         ]);
     }
 
@@ -51,18 +62,20 @@ class BookController extends Controller
     	$userBooks = $user->getBookCollection()->getValues();
 
     	/**
-	     * @var $paginator \Paginator_f6eaaf9
+	     * @var Paginator $paginator
 	     */
     	$paginator = $this->get('knp_paginator');
     	$pagination = $paginator->paginate(
     		$userBooks,
 		    $request->query->getInt('page', 1 ),
-		    9
+		    9,
+	        [
+	        	'defaultSortFieldName' => 'title',
+	        ]
 	    );
 
     	return $this->render('Book/myCart.html.twig', [
     		'pagination' => $pagination,
-		    'books' => $userBooks
 	    ]);
     }
 
@@ -163,23 +176,5 @@ class BookController extends Controller
     	return $this->render("Book/details.html.twig", [
     		'book' => $book
 	    ]);
-    }
-
-    public function searchBarAction() {
-    	$form = $this->createFormBuilder(null)
-		    ->add('search', TextType::class)
-		    ->getForm();
-
-    	return $this->render('Book/searchBar.html.twig', [
-    		'form' => $form->createView()
-	    ]);
-    }
-
-	/**
-	 * @Route("/search.html.twig", name="handleSearch")
-	 */
-    public function handleSearch(Request $request) {
-    	var_dump($request->request);
-    	die;
     }
 }
