@@ -3,11 +3,13 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Book;
+use AppBundle\Entity\User;
 use AppBundle\Entity\Genre;
 use AppBundle\Form\BookFormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 
 class BookController extends Controller
@@ -35,6 +37,33 @@ class BookController extends Controller
         	'pagination' => $pagination,
         	'books' => $books
         ]);
+    }
+
+	/**
+	 * @Route("/myCart/", name="my_cart")
+	 */
+    public function myCartAction(Request $request) {
+	    $user = $this->getUser();
+
+    	/**
+	     * @var $userBooks User
+	     */
+    	$userBooks = $user->getBookCollection()->getValues();
+
+    	/**
+	     * @var $paginator \Paginator_f6eaaf9
+	     */
+    	$paginator = $this->get('knp_paginator');
+    	$pagination = $paginator->paginate(
+    		$userBooks,
+		    $request->query->getInt('page', 1 ),
+		    9
+	    );
+
+    	return $this->render('Book/myCart.html.twig', [
+    		'pagination' => $pagination,
+		    'books' => $userBooks
+	    ]);
     }
 
     /**
@@ -79,6 +108,49 @@ class BookController extends Controller
 	    ]);
     }
 
+	/**
+	 * @Route("/book/cart/add/{id}", name="addToCart")
+	 */
+    public function addToCartAction($id) {
+    	$em = $this->getDoctrine()->getManager();
+
+    	$book = $em->getRepository('AppBundle:Book')
+		    ->find($id);
+
+	    /**
+	     * @var $user User
+	     */
+    	$user = $this->getUser();
+
+    	if (!$user->getBookCollection()->contains($book)) {
+		    $user->getBookCollection()->add($book);
+	    }
+
+	    $em->flush();
+
+	    return $this->redirectToRoute('homepage');
+    }
+
+	/**
+	 * @Route("/myCart/remove/book/{id}", name="removeFromCart")
+	 */
+    public function removeBookFromCartAction($id) {
+	    /**
+	     * @var $user User
+	     */
+	    $user = $this->getUser();
+
+	    $em = $this->getDoctrine()->getManager();
+
+	    $book = $em->getRepository('AppBundle:Book')
+	               ->find($id);
+
+	    $user->getBookCollection()->removeElement($book);
+
+	    $em->flush();
+
+	    return $this->redirectToRoute('my_cart');
+    }
 
 	/**
 	 * @Route("/book/details/{id}", name="book_details")
@@ -91,5 +163,23 @@ class BookController extends Controller
     	return $this->render("Book/details.html.twig", [
     		'book' => $book
 	    ]);
+    }
+
+    public function searchBarAction() {
+    	$form = $this->createFormBuilder(null)
+		    ->add('search', TextType::class)
+		    ->getForm();
+
+    	return $this->render('Book/searchBar.html.twig', [
+    		'form' => $form->createView()
+	    ]);
+    }
+
+	/**
+	 * @Route("/search.html.twig", name="handleSearch")
+	 */
+    public function handleSearch(Request $request) {
+    	var_dump($request->request);
+    	die;
     }
 }

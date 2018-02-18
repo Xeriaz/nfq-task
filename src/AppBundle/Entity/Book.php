@@ -60,6 +60,12 @@ class Book
     private $genre;
 
 
+	/**
+	 * @ORM\ManyToMany(targetEntity="User", mappedBy="books")
+	 */
+    private $userBooks;
+
+
     /**
      * Get id
      *

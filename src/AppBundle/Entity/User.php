@@ -19,7 +19,8 @@ class User extends BaseUser {
 	protected $id;
 
 	/**
-	 * @ORM\Column(type="string")
+	 * @ORM\ManyToMany(targetEntity="Book")
+	 * @ORM\JoinTable(name="user_books")
 	 */
 	protected  $bookCollection;
 

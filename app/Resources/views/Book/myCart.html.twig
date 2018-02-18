@@ -18,12 +18,13 @@
                             <p class="text-justify card-text block-ellipsis"> Genre: {{ book.genre.genre }}</p>
                         {% endif %}
 
+
                     </div>
                     <div class="card-footer">
                         <small class="text-muted">{{ book.publishDate|date('Y-m-d') }}</small>
 
                         {% if is_granted('ROLE_USER') %}
-                            <a href="/book/cart/add/{{ book.id }}" class="btn btn-success float-right">Add to cart</a>
+                            <a href="/myCart/remove/book/{{ book.id }}" class="btn btn-danger float-right">Remove From Cart</a>
                         {% endif %}
 
                     </div>
@@ -31,13 +32,12 @@
             </div>
         {% endfor %}
     </div>
-
         <row class="mx-auto" style="padding: 10px;">
-            <div class="col-md-4"></div>
-            <div class="navigation">
+            <div class="navigation ">
                 {{ knp_pagination_render(pagination) }}
             </div>
         </row>
 
-{% endblock %}
 
+
+{% endblock %}
